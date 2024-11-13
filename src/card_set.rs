@@ -3,27 +3,22 @@ use scraper::ElementRef;
 use serde::{Deserialize, Serialize};
 use std::fmt;
 
-use crate::card::Card;
-
 #[derive(Debug, Deserialize, Serialize)]
-pub struct CardSet {
+pub struct Pack {
     pub id: String,
     pub title: String,
     pub label: Option<String>,
-
-    pub cards: Vec<Card>,
 }
 
-impl CardSet {
-    pub fn new(element: ElementRef) -> CardSet {
-        let title = CardSet::flatten_title(&element.inner_html());
-        let label = CardSet::get_label_from_title(&title);
+impl Pack {
+    pub fn new(element: ElementRef) -> Self {
+        let title = Self::flatten_title(&element.inner_html());
+        let label = Self::get_label_from_title(&title);
 
-        CardSet {
+        Self {
             id: element.attr("value").unwrap().to_string(),
             title,
             label,
-            cards: Vec::new(),
         }
     }
 
@@ -44,7 +39,7 @@ impl CardSet {
     }
 }
 
-impl fmt::Display for CardSet {
+impl fmt::Display for Pack {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(
             f,

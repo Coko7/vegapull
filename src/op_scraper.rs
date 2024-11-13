@@ -3,9 +3,7 @@ use log::{debug, info};
 use reqwest::blocking::Client;
 use std::collections::HashMap;
 
-use crate::{
-    card::Card, card_scraper::CardScraper, card_set::CardSet, localizer::Localizer, op_data,
-};
+use crate::{card::Card, card_scraper::CardScraper, card_set::Pack, localizer::Localizer, op_data};
 
 pub struct OpTcgScraper<'a> {
     base_url: String,
@@ -39,7 +37,7 @@ impl<'a> OpTcgScraper<'a> {
         full_url
     }
 
-    pub fn fetch_all_card_sets(&self) -> Result<Vec<CardSet>, anyhow::Error> {
+    pub fn fetch_all_packs(&self) -> Result<Vec<Pack>, anyhow::Error> {
         let url = self.cardlist_endpoint();
         info!("GET `{}`", url);
 
@@ -53,14 +51,14 @@ impl<'a> OpTcgScraper<'a> {
 
         let series_selector = scraper::Selector::parse(sel).unwrap();
 
-        let card_sets: Vec<CardSet> = document
+        let packs: Vec<Pack> = document
             .select(&series_selector)
-            .map(|x| CardSet::new(x))
+            .map(|x| Pack::new(x))
             .filter(|cs| cs.id != "")
             .collect();
 
         info!("processed card_sets");
-        Ok(card_sets)
+        Ok(packs)
     }
 
     pub fn fetch_all_cards(&self, card_set_id: &str) -> Result<Vec<Card>, anyhow::Error> {

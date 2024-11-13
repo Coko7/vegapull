@@ -1,25 +1,27 @@
 use anyhow::Context;
 use chrono::{DateTime, Utc};
+use core::panic;
 use log::{debug, error, info, trace};
 use serde::{Deserialize, Serialize};
 use std::{fs, path::PathBuf};
 
-use crate::{card::Card, card_set::CardSet};
+use crate::{card::Card, card_set::Pack};
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct OnePieceTcgData {
     pub base_url: String,
     pub fetch_start_date: DateTime<Utc>,
     pub fetch_end_date: DateTime<Utc>,
-    pub card_sets: Vec<CardSet>,
+    pub card_sets: Vec<Pack>,
 }
 
 impl OnePieceTcgData {
     pub fn total_cards(&self) -> usize {
-        self.card_sets
-            .iter()
-            .map(|card_set| card_set.cards.len())
-            .sum()
+        panic!("not reimplemented")
+        // self.card_sets
+        //     .iter()
+        //     .map(|card_set| card_set.cards.len())
+        //     .sum()
     }
 }
 

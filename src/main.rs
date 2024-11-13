@@ -1,28 +1,39 @@
+use core::panic;
+use std::ffi::OsString;
+
 use anyhow::Result;
 use chrono::Utc;
+use clap::Parser;
+use cli::Cli;
 use localizer::Localizer;
-use log::{error, info};
+use log::info;
 
 use op_scraper::OpTcgScraper;
 
 mod card;
 mod card_scraper;
 mod card_set;
+mod cli;
 mod localizer;
 mod op_data;
 mod op_scraper;
 
 fn main() -> Result<()> {
-    env_logger::init();
+    let args = Cli::parse();
+    env_logger::Builder::new()
+        .filter_level(args.verbose.log_level_filter())
+        .init();
 
-    let localizer = Localizer::load_from_file("jp")?;
+    process_args(args)?;
 
-    match scrap_all_cards(&localizer) {
-        Ok(()) => (),
-        Err(error) => {
-            error!("failed to scrap cards data: {}", error);
-        }
-    }
+    // let localizer = Localizer::load_from_file("en")?;
+    //
+    // match scrap_all_cards(&localizer) {
+    //     Ok(()) => (),
+    //     Err(error) => {
+    //         error!("failed to scrap cards data: {}", error);
+    //     }
+    // }
 
     // match download_all_images(&localizer) {
     //     Ok(()) => (),
@@ -34,83 +45,56 @@ fn main() -> Result<()> {
     Ok(())
 }
 
-fn download_all_images(localizer: &Localizer) -> Result<(), anyhow::Error> {
-    info!("start massive download of OP TCG card images");
-
+fn process_args(args: Cli) -> Result<()> {
+    // let language = args.language;
+    let localizer = Localizer::load_from_file("en")?;
     let scraper = OpTcgScraper::new(&localizer);
-    let data = op_data::load_data()?;
 
-    for (set_idx, card_set) in data.card_sets.iter().enumerate() {
-        info!(
-            "downloading data for set `{}` ({}/{}), {} cards...",
-            card_set.title,
-            set_idx,
-            data.card_sets.len(),
-            card_set.cards.len()
-        );
+    match args.command {
+        cli::Commands::Packs => list_packs(&scraper),
+        cli::Commands::Cards { pack_id } => list_cards(&scraper, &pack_id.to_string_lossy()),
+        cli::Commands::Image { card_id } => get_image(&scraper, &card_id.to_string_lossy()),
+    }
+}
 
-        for (card_idx, card) in card_set.cards.iter().enumerate() {
-            scraper.download_card_image(card)?;
-            info!(
-                "({}) downloading card `{}` ({}/{})...",
-                card_set.title,
-                card.id,
-                card_idx,
-                card_set.cards.len()
-            );
+fn list_packs(scraper: &OpTcgScraper) -> Result<()> {
+    info!("fetching all pack ids...");
+    let start_time = Utc::now();
 
-            println!("{}", card.id);
-        }
+    let packs = scraper.fetch_all_packs()?;
+    info!("successfully fetched {} packs!", packs.len());
+
+    for pack in packs {
+        println!("{}", pack);
     }
 
-    info!(
-        "downloaded images for: {} sets ; {} total cards",
-        data.card_sets.len(),
-        data.total_cards()
-    );
+    let end_time = Utc::now();
 
+    info!("Time, start: {}, end: {}", start_time, end_time);
     Ok(())
 }
 
-fn scrap_all_cards(localizer: &Localizer) -> Result<(), anyhow::Error> {
-    info!("start OP TCG Scraper");
-
-    let scraper = OpTcgScraper::new(&localizer);
-
-    info!("fetching all card sets...");
+fn list_cards(scraper: &OpTcgScraper, pack_id: &str) -> Result<()> {
+    info!("fetching all cards...");
     let start_time = Utc::now();
 
-    let mut card_sets = scraper.fetch_all_card_sets()?;
+    let cards = scraper.fetch_all_cards(&pack_id)?;
+    info!(
+        "successfully fetched {} cards for pack: `{}`!",
+        cards.len(),
+        pack_id
+    );
 
-    let total_sets = card_sets.len();
-    info!("successfully fetched {} card sets!", total_sets);
-
-    for (index, card_set) in card_sets.iter_mut().enumerate() {
-        info!(
-            "fetching cards for set {}/{}: `{}`",
-            index, total_sets, card_set
-        );
-
-        let cards = scraper.fetch_all_cards(&card_set.id)?;
-        info!(
-            "successfully fetched {} cards for set: `{}`!",
-            cards.len(),
-            card_set
-        );
-
-        card_set.cards = cards;
+    for card in cards {
+        println!("{}", card);
     }
 
-    info!("processed all {} card sets", card_sets.len());
     let end_time = Utc::now();
 
-    let data = op_data::OnePieceTcgData {
-        base_url: localizer.hostname.clone(),
-        fetch_start_date: start_time,
-        fetch_end_date: end_time,
-        card_sets,
-    };
-
-    op_data::write_data(&data)?;
+    info!("Time, start: {}, end: {}", start_time, end_time);
     Ok(())
+}
+
+fn get_image(scraper: &OpTcgScraper, card_id: &str) -> Result<()> {
+    panic!("Not Yet Implemented");
 }
