@@ -1,6 +1,3 @@
-use core::panic;
-use std::ffi::OsString;
-
 use anyhow::Result;
 use chrono::Utc;
 use clap::Parser;
@@ -12,11 +9,11 @@ use op_scraper::OpTcgScraper;
 
 mod card;
 mod card_scraper;
-mod card_set;
 mod cli;
 mod localizer;
 mod op_data;
 mod op_scraper;
+mod pack;
 
 fn main() -> Result<()> {
     let args = Cli::parse();
@@ -25,35 +22,16 @@ fn main() -> Result<()> {
         .init();
 
     process_args(args)?;
-
-    // let localizer = Localizer::load_from_file("en")?;
-    //
-    // match scrap_all_cards(&localizer) {
-    //     Ok(()) => (),
-    //     Err(error) => {
-    //         error!("failed to scrap cards data: {}", error);
-    //     }
-    // }
-
-    // match download_all_images(&localizer) {
-    //     Ok(()) => (),
-    //     Err(error) => {
-    //         error!("failed to download card images: {}", error);
-    //     }
-    // }
-
     Ok(())
 }
 
 fn process_args(args: Cli) -> Result<()> {
-    // let language = args.language;
-    let localizer = Localizer::load_from_file("en")?;
+    let localizer = Localizer::load(args.language)?;
     let scraper = OpTcgScraper::new(&localizer);
 
     match args.command {
         cli::Commands::Packs => list_packs(&scraper),
         cli::Commands::Cards { pack_id } => list_cards(&scraper, &pack_id.to_string_lossy()),
-        cli::Commands::Image { card_id } => get_image(&scraper, &card_id.to_string_lossy()),
     }
 }
 
@@ -64,9 +42,8 @@ fn list_packs(scraper: &OpTcgScraper) -> Result<()> {
     let packs = scraper.fetch_all_packs()?;
     info!("successfully fetched {} packs!", packs.len());
 
-    for pack in packs {
-        println!("{}", pack);
-    }
+    let json = serde_json::to_string(&packs)?;
+    println!("{}", json);
 
     let end_time = Utc::now();
 
@@ -85,16 +62,11 @@ fn list_cards(scraper: &OpTcgScraper, pack_id: &str) -> Result<()> {
         pack_id
     );
 
-    for card in cards {
-        println!("{}", card);
-    }
+    let json = serde_json::to_string(&cards)?;
+    println!("{}", json);
 
     let end_time = Utc::now();
 
     info!("Time, start: {}, end: {}", start_time, end_time);
     Ok(())
-}
-
-fn get_image(scraper: &OpTcgScraper, card_id: &str) -> Result<()> {
-    panic!("Not Yet Implemented");
 }

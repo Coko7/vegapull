@@ -1,4 +1,4 @@
-use std::{ffi::OsString, path::PathBuf};
+use std::ffi::OsString;
 
 use clap::{command, Parser, Subcommand, ValueEnum};
 
@@ -13,7 +13,7 @@ pub struct Cli {
     pub command: Commands,
 
     /// Language to use for the data
-    #[arg(short, long = "lang", value_name = "language", default_value_t = LanguageCode::English, value_enum)]
+    #[arg(short, long = "lang", value_name = "LANGUAGE", default_value_t = LanguageCode::English, value_enum)]
     pub language: LanguageCode,
 
     // /// Write data to a file instead of stdout
@@ -33,17 +33,11 @@ pub enum Commands {
     /// Get the list of all existing packs
     #[command(alias = "pack", alias = "pak")]
     Packs,
-    /// Get all cards within in the given pack
+    /// Get all cards within the given pack
     #[command(alias = "card", alias = "car")]
     Cards {
         /// ID of the pack
         pack_id: OsString,
-    },
-    /// Fetch the image art for a specific card
-    #[command(alias("img"))]
-    Image {
-        /// ID of the card
-        card_id: OsString,
     },
 }
 

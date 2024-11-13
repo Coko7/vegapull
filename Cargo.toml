@@ -1,5 +1,5 @@
 [package]
-name = "op-tcg-scraper"
+name = "vegapull"
 version = "0.1.0"
 edition = "2021"
 

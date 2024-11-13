@@ -3,6 +3,8 @@ use std::{collections::HashMap, fs, path::PathBuf};
 use log::{debug, info};
 use serde::{Deserialize, Serialize};
 
+use crate::cli::LanguageCode;
+
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Localizer {
     pub hostname: String,
@@ -48,6 +50,13 @@ impl Localizer {
 
     pub fn match_rarity(&self, value: &str) -> Option<String> {
         Self::reverse_search(&self.rarities, value)
+    }
+
+    pub fn load(language: LanguageCode) -> Result<Localizer, anyhow::Error> {
+        match language {
+            LanguageCode::English => Self::load_from_file("en"),
+            LanguageCode::Japanese => Self::load_from_file("jp"),
+        }
     }
 
     pub fn load_from_file(locale: &str) -> Result<Localizer, anyhow::Error> {

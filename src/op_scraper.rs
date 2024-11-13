@@ -3,7 +3,7 @@ use log::{debug, info};
 use reqwest::blocking::Client;
 use std::collections::HashMap;
 
-use crate::{card::Card, card_scraper::CardScraper, card_set::Pack, localizer::Localizer, op_data};
+use crate::{card::Card, card_scraper::CardScraper, localizer::Localizer, op_data, pack::Pack};
 
 pub struct OpTcgScraper<'a> {
     base_url: String,
@@ -11,13 +11,6 @@ pub struct OpTcgScraper<'a> {
 }
 
 impl<'a> OpTcgScraper<'a> {
-    // pub fn new2(base_url: &str) -> OpTcgScraper {
-    //     OpTcgScraper {
-    //         lo
-    //         base_url: base_url.to_string(),
-    //     }
-    // }
-
     pub fn new(localizer: &Localizer) -> OpTcgScraper {
         OpTcgScraper {
             base_url: localizer.hostname.clone(),
@@ -47,7 +40,7 @@ impl<'a> OpTcgScraper<'a> {
         let document = scraper::Html::parse_document(&response);
 
         let sel = "div.seriesCol>select#series>option";
-        info!("fetching series (card_sets) ({})...", sel);
+        info!("fetching series (packs) ({})...", sel);
 
         let series_selector = scraper::Selector::parse(sel).unwrap();
 
@@ -57,16 +50,16 @@ impl<'a> OpTcgScraper<'a> {
             .filter(|cs| cs.id != "")
             .collect();
 
-        info!("processed card_sets");
+        info!("processed packs");
         Ok(packs)
     }
 
-    pub fn fetch_all_cards(&self, card_set_id: &str) -> Result<Vec<Card>, anyhow::Error> {
+    pub fn fetch_all_cards(&self, pack_id: &str) -> Result<Vec<Card>, anyhow::Error> {
         let url = self.cardlist_endpoint();
         info!("GET `{}`", url);
 
         let mut params = HashMap::new();
-        params.insert("series", card_set_id);
+        params.insert("series", pack_id);
 
         let client = Client::new();
         let response = client
@@ -79,7 +72,7 @@ impl<'a> OpTcgScraper<'a> {
         let document = scraper::Html::parse_document(&response);
 
         let sel = "div.resultCol>a";
-        info!("fetching cards for set `{}` ({})...", card_set_id, sel);
+        info!("fetching cards for set `{}` ({})...", pack_id, sel);
 
         let card_ids_selector = scraper::Selector::parse(sel).unwrap();
 
@@ -106,7 +99,7 @@ impl<'a> OpTcgScraper<'a> {
             };
         }
 
-        info!("processed cards for set `{}`", card_set_id);
+        info!("processed cards for set `{}`", pack_id);
         Ok(cards)
     }
 

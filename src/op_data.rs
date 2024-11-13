@@ -5,7 +5,7 @@ use log::{debug, error, info, trace};
 use serde::{Deserialize, Serialize};
 use std::{fs, path::PathBuf};
 
-use crate::{card::Card, card_set::Pack};
+use crate::{card::Card, pack::Pack};
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct OnePieceTcgData {
