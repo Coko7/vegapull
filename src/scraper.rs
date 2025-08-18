@@ -56,7 +56,7 @@ impl<'a> OpTcgScraper<'a> {
                         packs.push(pack);
                     }
                 }
-                Err(e) => bail!("failed to scrap data about packs: {}", e),
+                Err(e) => bail!("failed to scrape data about packs: {}", e),
             }
         }
 
@@ -102,7 +102,7 @@ impl<'a> OpTcgScraper<'a> {
                     cards.push(card);
                 }
                 Err(e) => {
-                    bail!("failed to scrap data about card `{}`: {}", &card_id, e)
+                    bail!("failed to scrape data about card `{}`: {}", &card_id, e)
                 }
             };
         }

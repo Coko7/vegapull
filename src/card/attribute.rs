@@ -14,7 +14,7 @@ pub enum CardAttribute {
 
 impl CardAttribute {
     pub fn parse(localizer: &Localizer, value: &str) -> Result<CardAttribute> {
-        match localizer.match_attribute(value) {
+        match localizer.match_attribute(value.trim()) {
             Some(key) => Ok(Self::from_str(&key)?),
             None => bail!("Failed to match attribute `{}`", value),
         }

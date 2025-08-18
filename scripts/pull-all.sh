@@ -33,7 +33,7 @@ function pull_cards() {
     packs=$(cat $VEGA_DATA/packs.json)
 
     while read -r id; do
-        echo -n "[$index/$count] VagaPulling cards for pack '$id'..."
+        echo -n "[$index/$count] VegaPulling cards for pack '$id'..."
         if ! ./target/release/vegapull --language $LANGUAGE cards "$id" > "$VEGA_DATA/cards_$id.json"; then
             echo "Failure"
             echo "Failed to pull cards using vegapull. Aborted" >&2

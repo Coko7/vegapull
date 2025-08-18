@@ -14,7 +14,7 @@ pub enum CardCategory {
 
 impl CardCategory {
     pub fn parse(localizer: &Localizer, value: &str) -> Result<CardCategory> {
-        match localizer.match_category(value) {
+        match localizer.match_category(value.trim()) {
             Some(key) => Ok(Self::from_str(&key)?),
             None => bail!("Failed to match category `{}`", value),
         }
