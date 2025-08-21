@@ -52,7 +52,27 @@ if ! pull_cards; then
 fi
 
 function download_images() {
-    echo "NOT IMPLEMENTED YET"
+    local index=1
+    local packs
+    packs=$(cat "$VEGA_DATA/packs.json")
+
+    while read -r pack_id; do
+        local output_dir="$VEGA_DATA/images/$pack_id"
+        pack_title=$(echo "$packs" | jq --arg pack_id "$pack_id" -r '.[] | select(.id == $pack_id) | .title_parts.title')
+        echo "[$index/$count] VegaPulling images for: $pack_title ($pack_id)..."
+
+        if ! "$VEGA_BIN" --language "$LANGUAGE" images --output-dir="$output_dir" "$pack_id" -vv; then
+            echo "Failed to pull images using vegapull. Aborted" >&2
+            return 1
+        else
+            echo "[$index/$count] Successfully VegaPulled images for: $pack_title ($pack_id) ✅"
+        fi
+
+        ((index++))
+    done < <( echo "$packs" | jq -r '.[].id')
+
+    echo "✅ Successfully downloaded data for $index packs!"
+
 }
 
 read -rp "Download card images as well? (y/N) " confirm

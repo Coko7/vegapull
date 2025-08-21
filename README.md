@@ -46,11 +46,21 @@ Options:
           Print help
 ```
 
-3. You can also use the example bash scripts that directly use the `vegapull` CLI to download data for all existing packs:
+## Helper Scripts
+You can use the example scripts that directly use the `vegapull` CLI to download data for all existing packs:
+
+### Bash
 ```console
 coko7@example:~$ bash scripts/pull-all.sh
 // the `gum` one is more complete but requires some additional tooling to install in your shell:
 coko7@example:~$ bash scripts/pull-all-gum.sh
+```
+
+### Go
+> Requires [Go](https://go.dev/) to be installed.
+
+```console
+➜ go run scripts/pull.go
 ```
 
 ## 🃏 Supported card fields
