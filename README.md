@@ -10,6 +10,13 @@ The CLI directly goes against the [onepiece-cardgame.com](https://onepiece-cardg
 
 For practical reasons, data is kept in a separate repository: https://github.com/Coko7/vegapull-records
 
+## Installation
+
+The easiest way to install is through [crates.io](https://crates.io/crates/vegapull):
+```console
+cargo install vegapull
+```
+
 ## How to use?
 
 1. Install / build from source:

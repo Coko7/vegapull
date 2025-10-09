@@ -2,15 +2,13 @@
 name = "vegapull"
 version = "0.1.0"
 description = "Command line tool for scraping data for the One Piece Trading Card Game"
-categories = ["command-line-utilities"]
-keywords = ["cli", "one-piece", "tcg", "manga", "scraper"]
 repository = "https://github.com/Coko7/vegapull"
+authors = ["Coko <91132775+Coko7@users.noreply.github.com>"]
 license = "GPL-3.0-only"
 edition = "2021"
 rust-version = "1.74.1"
-authors = ["Coko <91132775+Coko7@users.noreply.github.com>"]
-homepage = "https://github.com/Coko7/vegapull"
-readme = "README.md"
+keywords = ["cli", "one-piece", "tcg", "scraping", "data"]
+categories = ["command-line-utilities", "filesystem", "multimedia::images"]
 
 [dependencies]
 anyhow = "1.0.86"
