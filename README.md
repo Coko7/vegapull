@@ -17,15 +17,15 @@ The easiest way to install is through [crates.io](https://crates.io/crates/vegap
 cargo install vegapull
 ```
 
+The other option is to build from source:
+```console
+git clone https://github.com/Coko7/vegapull.git
+cd vegapull 
+cargo build --release
+```
+
 ## How to use?
 
-1. Install / build from source:
-```console
-coko7@example:~$ git clone https://github.com/Coko7/vegapull.git
-coko7@example:~$ cd vegapull 
-coko7@example:~$ cargo build --release
-```
-2. Use
 ```console
 coko7@example:~$ vegapull -h
 Dynamically fetch data for the One Piece TCG from official sites.
