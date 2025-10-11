@@ -51,6 +51,8 @@ Options:
           Decrease logging verbosity
   -h, --help
           Print help
+  -V, --version
+          Print version
 ```
 
 ## Helper Scripts
@@ -64,6 +66,8 @@ coko7@example:~$ bash scripts/pull-all-gum.sh
 ```
 
 ### Go
+
+> [!NOTE]
 > Requires [Go](https://go.dev/) to be installed.
 
 ```console

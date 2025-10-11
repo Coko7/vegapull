@@ -9,6 +9,7 @@ use clap::{command, Parser, Subcommand, ValueEnum};
     about = "Dynamically fetch data for the One Piece TCG from official sites.",
     long_about = None
 )]
+#[command(version)]
 pub struct Cli {
     #[command(subcommand)]
     pub command: Commands,
