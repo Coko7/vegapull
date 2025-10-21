@@ -1,7 +1,7 @@
 use std::{
     fs,
     io::{self, Write},
-    path::{Path, PathBuf},
+    path::PathBuf,
     time::Instant,
 };
 
@@ -12,7 +12,7 @@ use yansi::Paint;
 
 use crate::{cli::LanguageCode, localizer::Localizer, scraper::OpTcgScraper, storage::DataStore};
 
-pub fn show_interactive(config_dir: &Path) -> Result<()> {
+pub fn show_interactive() -> Result<()> {
     println!("{}", "+---------------------------+".yellow());
     println!(
         "{} {} {}",
@@ -83,7 +83,7 @@ pub fn show_interactive(config_dir: &Path) -> Result<()> {
 
     let download_images = is_yes(value);
 
-    let localizer = Localizer::load(config_dir, language)?;
+    let localizer = Localizer::load(language)?;
     let scraper = OpTcgScraper::new(&localizer);
     let store = DataStore::new(&data_dir, language);
 

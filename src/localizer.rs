@@ -1,9 +1,12 @@
 use anyhow::{ensure, Context, Result};
 use log::{debug, info};
 use serde::{Deserialize, Serialize};
-use std::{collections::HashMap, fs, path::Path};
+use std::{collections::HashMap, fs};
 
-use crate::cli::LanguageCode;
+use crate::{cli::LanguageCode, config};
+
+pub const EN_LOCALE_RAW: &str = include_str!("../config/en.toml");
+pub const JP_LOCALE_RAW: &str = include_str!("../config/jp.toml");
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Localizer {
@@ -42,13 +45,14 @@ impl Localizer {
         Self::reverse_search(&self.rarities, value)
     }
 
-    pub fn find_locales(config_dir: &Path) -> Result<()> {
+    pub fn find_locales() -> Result<()> {
+        let config_dir = config::get_config_dir()?;
         ensure!(
             config_dir.exists(),
             format!("config directory not found: {}", config_dir.display())
         );
 
-        let entries = fs::read_dir(config_dir)?;
+        let entries = fs::read_dir(&config_dir)?;
         println!("config directory: {}", config_dir.display());
 
         for entry in entries {
@@ -60,19 +64,21 @@ impl Localizer {
         Ok(())
     }
 
-    pub fn load(config_dir: &Path, language: LanguageCode) -> Result<Localizer> {
+    pub fn load(language: LanguageCode) -> Result<Localizer> {
         match language {
-            LanguageCode::ChineseHongKong => Self::load_from_file(config_dir, "zh_hk"),
-            LanguageCode::ChineseSimplified => Self::load_from_file(config_dir, "zh_cn"),
-            LanguageCode::ChineseTaiwan => Self::load_from_file(config_dir, "zh_tw"),
-            LanguageCode::English => Self::load_from_file(config_dir, "en"),
-            LanguageCode::EnglishAsia => Self::load_from_file(config_dir, "en_asia"),
-            LanguageCode::Japanese => Self::load_from_file(config_dir, "jp"),
-            LanguageCode::Thai => Self::load_from_file(config_dir, "th"),
+            LanguageCode::ChineseHongKong => Self::load_from_file("zh_hk"),
+            LanguageCode::ChineseSimplified => Self::load_from_file("zh_cn"),
+            LanguageCode::ChineseTaiwan => Self::load_from_file("zh_tw"),
+            LanguageCode::English => Self::load_from_file("en"),
+            LanguageCode::EnglishAsia => Self::load_from_file("en_asia"),
+            LanguageCode::Japanese => Self::load_from_file("jp"),
+            LanguageCode::Thai => Self::load_from_file("th"),
         }
     }
 
-    pub fn load_from_file(config_dir: &Path, locale: &str) -> Result<Localizer> {
+    pub fn load_from_file(locale: &str) -> Result<Localizer> {
+        let config_dir = config::get_config_dir()?;
+
         ensure!(
             config_dir.exists(),
             format!("config directory not found: {}", config_dir.display())

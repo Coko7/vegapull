@@ -15,7 +15,7 @@ pub struct OpTcgScraper<'a> {
 }
 
 impl<'a> OpTcgScraper<'a> {
-    pub fn new(localizer: &Localizer) -> OpTcgScraper {
+    pub fn new(localizer: &Localizer) -> OpTcgScraper<'_> {
         OpTcgScraper {
             base_url: localizer.hostname.clone(),
             localizer,

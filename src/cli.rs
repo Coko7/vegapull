@@ -4,7 +4,7 @@ use anyhow::Result;
 use clap::{command, Parser, Subcommand, ValueEnum};
 
 #[derive(Debug, Parser)]
-#[command(name = "veganet")]
+#[command(name = "vegapull")]
 #[command(
     about = "Dynamically fetch data for the One Piece TCG from official sites.",
     long_about = None

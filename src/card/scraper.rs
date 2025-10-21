@@ -303,11 +303,10 @@ impl CardScraper {
         }
     }
 
-    pub fn get_dl_node(document: &Html, card_id: String) -> Result<ElementRef> {
+    pub fn get_dl_node(document: &Html, card_id: String) -> Result<ElementRef<'_>> {
         let dl_sel = format!("dl#{}", card_id);
         let dl_sel = scraper::Selector::parse(&dl_sel).unwrap();
         let dl_elem = document.select(&dl_sel).next().unwrap();
-
         Ok(dl_elem)
     }
 }
