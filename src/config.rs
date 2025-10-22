@@ -1,7 +1,7 @@
 use anyhow::{bail, Result};
+use directories::ProjectDirs;
 use log::info;
 use std::{env, fs, path::PathBuf};
-use xdg::BaseDirectories;
 
 use crate::localizer::{EN_LOCALE_RAW, JP_LOCALE_RAW};
 
@@ -20,19 +20,10 @@ pub fn get_config_dir() -> Result<PathBuf> {
         return Ok(val);
     }
 
-    if let Ok(xdg_dirs) = BaseDirectories::new() {
-        let config_home = xdg_dirs.get_config_home();
-        let val = config_home.join(APP_NAME);
-        info!("get config from XDG: {}", val.to_string_lossy());
-
-        return Ok(val);
-    }
-
-    if let Ok(home_dir) = env::var("HOME") {
-        let val = PathBuf::from(home_dir).join(".config").join(APP_NAME);
-        info!("get config from HOME: {}", val.to_string_lossy());
-
-        return Ok(val);
+    if let Some(proj_dirs) = ProjectDirs::from("", "", APP_NAME) {
+        let config_dir = proj_dirs.config_dir();
+        info!("get config dir from proj dirs: {}", config_dir.display());
+        return Ok(config_dir.to_path_buf());
     }
 
     bail!("could not get config directory")
