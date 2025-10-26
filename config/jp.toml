@@ -14,6 +14,7 @@ strike = "打"
 ranged = "射"
 special = "特"
 wisdom = "知"
+unknown = "？"
 
 [categories]
 leader = "LEADER"
