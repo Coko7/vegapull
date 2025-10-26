@@ -1,0 +1,35 @@
+hostname = "https://asia-hk.onepiece-cardgame.com"
+
+[colors]
+red = "紅"
+green = "綠"
+blue = "藍"
+purple = "紫"
+black = "黑"
+yellow = "黃"
+
+[attributes]
+slash = "斬"
+strike = "打"
+ranged = "射"
+special = "特"
+wisdom = "知"
+unknown = "？"
+
+[categories]
+leader = "LEADER"
+character = "CHARACTER"
+event = "EVENT"
+stage = "STAGE"
+don = "DON"
+
+[rarities]
+common = "C"
+uncommon = "UC"
+rare = "R"
+super_rare = "SR"
+secret_rare = "SEC"
+leader = "L"
+special = "SP卡"
+treasure_rare = "TR"
+promo = "P"

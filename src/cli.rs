@@ -76,6 +76,8 @@ pub enum LanguageCode {
     Japanese,
     #[value(name = "thai", alias = "th")]
     Thai,
+    #[value(name = "french", alias = "fr")]
+    French,
 }
 
 impl LanguageCode {
@@ -88,6 +90,7 @@ impl LanguageCode {
             LanguageCode::EnglishAsia => "english-asia",
             LanguageCode::Japanese => "japanese",
             LanguageCode::Thai => "thai",
+            LanguageCode::French => "french",
         };
 
         PathBuf::from(path)
@@ -106,6 +109,7 @@ impl FromStr for LanguageCode {
             "english-asia" => Ok(LanguageCode::EnglishAsia),
             "japanese" => Ok(LanguageCode::Japanese),
             "thai" => Ok(LanguageCode::Thai),
+            "french" => Ok(LanguageCode::French),
             _ => Err(()),
         }
     }

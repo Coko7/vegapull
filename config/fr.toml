@@ -1,0 +1,35 @@
+hostname = "https://fr.onepiece-cardgame.com"
+
+[colors]
+red = "Rouge"
+green = "Vert"
+blue = "Bleu"
+purple = "Violet"
+black = "Noir"
+yellow = "Jaune"
+
+[attributes]
+slash = "Tranche"
+strike = "Frappe"
+ranged = "Distance"
+special = "Spécial"
+wisdom = "Sagesse"
+unknown = "?"
+
+[categories]
+leader = "LEADER"
+character = "PERSONNAGE"
+event = "ÉVÉNEMENTS"
+stage = "LIEU"
+don = "DON"
+
+[rarities]
+common = "C"
+uncommon = "UC"
+rare = "R"
+super_rare = "SR"
+secret_rare = "SEC"
+leader = "L"
+special = "SP CARD"
+treasure_rare = "TR"
+promo = "P"

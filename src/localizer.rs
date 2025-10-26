@@ -7,6 +7,10 @@ use crate::{cli::LanguageCode, config};
 
 pub const EN_LOCALE_RAW: &str = include_str!("../config/en.toml");
 pub const JP_LOCALE_RAW: &str = include_str!("../config/jp.toml");
+pub const ZH_HK_LOCALE_RAW: &str = include_str!("../config/zh_hk.toml");
+pub const ZH_TW_LOCALE_RAW: &str = include_str!("../config/zh_tw.toml");
+pub const TH_LOCALE_RAW: &str = include_str!("../config/th.toml");
+pub const FR_LOCALE_RAW: &str = include_str!("../config/fr.toml");
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Localizer {
@@ -73,6 +77,7 @@ impl Localizer {
             LanguageCode::EnglishAsia => Self::load_from_file("en_asia"),
             LanguageCode::Japanese => Self::load_from_file("jp"),
             LanguageCode::Thai => Self::load_from_file("th"),
+            LanguageCode::French => Self::load_from_file("fr"),
         }
     }
 

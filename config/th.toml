@@ -1,0 +1,35 @@
+hostname = "https://asia-th.onepiece-cardgame.com"
+
+[colors]
+red = "แดง"
+green = "เขียว"
+blue = "ฟ้า"
+purple = "ม่วง"
+black = "ดำ"
+yellow = "เหลือง"
+
+[attributes]
+slash = "ฟัน"
+strike = "ตี"
+ranged = "ยิง"
+special = "พิเศษ"
+wisdom = "ปัญญา"
+unknown = "?"
+
+[categories]
+leader = "LEADER"
+character = "CHARACTER"
+event = "EVENT"
+stage = "STAGE"
+don = "DON"
+
+[rarities]
+common = "C"
+uncommon = "UC"
+rare = "R"
+super_rare = "SR"
+secret_rare = "SEC"
+leader = "L"
+special = "SP CARD"
+treasure_rare = "TR"
+promo = "P"
