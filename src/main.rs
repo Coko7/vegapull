@@ -38,8 +38,8 @@ fn process_args(args: Cli) -> Result<()> {
     initialize_configs()?;
 
     match args.command {
-        cli::Commands::Packs => list_packs(args.language),
-        cli::Commands::Cards { pack_id } => list_cards(args.language, &pack_id.to_string_lossy()),
+        cli::Commands::Packs { output_file } => list_packs(args.language, output_file.as_deref()),
+        cli::Commands::Cards { pack_id, output_file } => list_cards(args.language, &pack_id.to_string_lossy(), output_file.as_deref()),
         cli::Commands::Interactive => interactive::show_interactive(),
         cli::Commands::Images {
             pack_id,
@@ -108,7 +108,7 @@ fn download_images(language: LanguageCode, pack_id: &str, output_dir: &Path) -> 
     Ok(())
 }
 
-fn list_packs(language: LanguageCode) -> Result<()> {
+fn list_packs(language: LanguageCode, output_file: Option<&Path>) -> Result<()> {
     let localizer = Localizer::load(language)?;
     let scraper = OpTcgScraper::new(&localizer);
 
@@ -119,7 +119,14 @@ fn list_packs(language: LanguageCode) -> Result<()> {
     info!("successfully fetched {} packs!", packs.len());
 
     let json = serde_json::to_string(&packs)?;
-    println!("{}", json);
+    if let Some(path) = output_file {
+        if let Some(parent) = path.parent() {
+            fs::create_dir_all(parent)?;
+        }
+        fs::write(path, json)?;
+    } else {
+        println!("{}", json);
+    }
 
     let duration = start.elapsed();
 
@@ -127,7 +134,7 @@ fn list_packs(language: LanguageCode) -> Result<()> {
     Ok(())
 }
 
-fn list_cards(language: LanguageCode, pack_id: &str) -> Result<()> {
+fn list_cards(language: LanguageCode, pack_id: &str, output_file: Option<&Path>) -> Result<()> {
     let localizer = Localizer::load(language)?;
     let scraper = OpTcgScraper::new(&localizer);
 
@@ -147,7 +154,14 @@ fn list_cards(language: LanguageCode, pack_id: &str) -> Result<()> {
     );
 
     let json = serde_json::to_string(&cards)?;
-    println!("{}", json);
+    if let Some(path) = output_file {
+        if let Some(parent) = path.parent() {
+            fs::create_dir_all(parent)?;
+        }
+        fs::write(path, json)?;
+    } else {
+        println!("{}", json);
+    }
 
     let duration = start.elapsed();
 

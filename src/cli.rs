@@ -30,12 +30,18 @@ pub struct Cli {
 pub enum Commands {
     /// Get the list of all existing packs
     #[command(alias = "pack", alias = "pak")]
-    Packs,
+    Packs {
+        #[arg(short, long = "out")]
+        output_file: Option<PathBuf>,
+    },
     /// Get all cards within the given pack
     #[command(alias = "card", alias = "car")]
     Cards {
         /// ID of the pack
         pack_id: OsString,
+
+        #[arg(short, long = "out")]
+        output_file: Option<PathBuf>,
     },
     /// Download all card images for a given pack
     #[command(alias = "image", alias = "img")]
