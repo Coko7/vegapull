@@ -18,10 +18,49 @@ pub enum CardRarity {
 
 impl CardRarity {
     pub fn parse(localizer: &Localizer, value: &str) -> Result<CardRarity> {
-        match localizer.match_rarity(value) {
-            Some(key) => Ok(Self::from_str(&key)?),
-            None => bail!("Failed to match rarity `{}`", value),
+        if let Some(key) = localizer.match_rarity(value) {
+            return Ok(Self::from_str(&key)?);
         }
+
+        // Fallback: To handle raw rarity codes like "SP SEC", "SEC SP", "SR SP", etc. in the French locale
+        let upper = value.to_uppercase();
+        let tokens: Vec<&str> = upper
+            .split(|c: char| !c.is_alphanumeric())
+            .filter(|s| !s.is_empty())
+            .collect();
+        
+        let has = |token: &str| tokens.iter().any(|t| *t == token);
+
+         // Prioritize SP as "Special" when present alongside other codes
+        if has("SP") {
+            return Ok(CardRarity::Special);
+        }
+        if has("SEC") {
+            return Ok(CardRarity::SecretRare);
+        }
+        if has("SR") {
+            return Ok(CardRarity::SuperRare);
+        }
+        if has("TR") {
+            return Ok(CardRarity::TreasureRare);
+        }
+        if has("UC") {
+            return Ok(CardRarity::Uncommon);
+        }
+        if has("C") {
+            return Ok(CardRarity::Common);
+        }
+        if has("R") {
+            return Ok(CardRarity::Rare);
+        }
+        if has("L") {
+            return Ok(CardRarity::Leader);
+        }
+        if has("P") {
+            return Ok(CardRarity::Promo);
+        }
+
+        bail!("Failed to match rarity `{}`", value)
     }
 
     pub fn from_str(value: &str) -> Result<CardRarity> {
