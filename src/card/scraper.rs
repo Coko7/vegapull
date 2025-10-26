@@ -172,6 +172,15 @@ impl CardScraper {
         trace!("fetching card.attributes ({})...", sel);
 
         if let Ok(attr_img) = Self::get_child_node(element, sel.to_string()) {
+            if let Some(url) = attr_img.attr("src") {
+                if let Ok(attributes) = CardAttribute::from_icon_url(url) {
+                    trace!("processed card.attributes");
+                    return Ok(attributes);
+                }
+                trace!("failed to parse card.attributes from icon url {}", url);
+            }
+            trace!("Falling back to processing alt attribute");
+            
             let raw_attributes = attr_img.attr("alt").context("no alt attr")?.to_string();
             trace!("fetched card.attributes: {}", raw_attributes);
 
