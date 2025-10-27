@@ -138,13 +138,33 @@ impl CardScraper {
         let raw_colors: Vec<&str> = raw_colors.split('/').collect();
 
         let mut colors = Vec::new();
+
+        if raw_colors.len() == 1 && localizer.match_color(raw_colors[0]).is_none() {
+            trace!("raw color is unseparatble, trying to parse character by character");
+            let mut any = false;
+            for ch in raw_colors[0].chars() {
+                let char_color = ch.to_string();
+                if let Some(raw_color) = localizer.match_color(&char_color) {
+                    trace!("found color char: {} -> {}", char_color, raw_color);
+                    let color = CardColor::from_str(&raw_color)?;
+                    colors.push(color);
+                    any = true;
+                }
+            }
+            if any {
+                colors.dedup();
+                trace!("processed card.colors by character");
+                return Ok(colors);
+            }
+        }
+
         for (index, raw_color) in raw_colors.iter().enumerate() {
             trace!("processing card.colors[{}]: {}", index, raw_color);
             let color = CardColor::parse(localizer, raw_color)?;
             colors.push(color);
         }
 
-        trace!("prcessed card.colors");
+        trace!("processed card.colors");
         Ok(colors)
     }
 
@@ -154,7 +174,10 @@ impl CardScraper {
 
         let raw_cost = Self::get_child_node(element, sel.to_string())?.inner_html();
         let raw_cost = Self::strip_html_tags(&raw_cost)?;
-        let raw_cost = normalize_ascii(&raw_cost).replace(',', "").trim().to_string();
+        let raw_cost = normalize_ascii(&raw_cost)
+            .replace(',', "")
+            .trim()
+            .to_string();
         trace!("fetched card.cost: {}", raw_cost);
 
         if raw_cost == "-" {
@@ -187,7 +210,7 @@ impl CardScraper {
                 trace!("failed to parse card.attributes from icon url {}", url);
             }
             trace!("Falling back to processing alt attribute");
-            
+
             let raw_attributes = attr_img.attr("alt").context("no alt attr")?.to_string();
             trace!("fetched card.attributes: {}", raw_attributes);
 
@@ -219,7 +242,10 @@ impl CardScraper {
 
         let raw_power = Self::get_child_node(element, sel.to_string())?.inner_html();
         let raw_power = Self::strip_html_tags(&raw_power)?;
-        let raw_power = normalize_ascii(&raw_power).replace(',', "").trim().to_string();
+        let raw_power = normalize_ascii(&raw_power)
+            .replace(',', "")
+            .trim()
+            .to_string();
         trace!("fetched card.power: {}", raw_power);
 
         if raw_power == "-" {
@@ -242,7 +268,10 @@ impl CardScraper {
 
         let raw_counter = Self::get_child_node(element, sel.to_string())?.inner_html();
         let raw_counter = Self::strip_html_tags(&raw_counter)?;
-        let raw_counter = normalize_ascii(&raw_counter).replace(',', "").trim().to_string();
+        let raw_counter = normalize_ascii(&raw_counter)
+            .replace(',', "")
+            .trim()
+            .to_string();
         trace!("fetched card.counter: {}", raw_counter);
 
         if raw_counter == "-" {

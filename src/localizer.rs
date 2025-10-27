@@ -46,10 +46,6 @@ impl Localizer {
         value: &str,
     ) -> Option<String> {
         let v = value.trim();
-        // Print Aliases for Debugging
-        info!("Matching value: `{}`", v);
-        info!("Primary map: {:?}", primary);
-        info!("Alias map: {:?}", aliases);
         // Exact match against primary map values
         if let Some((k, _)) = primary.iter().find(|(_, val)| val.as_str() == v) {
             return Some(k.clone());
@@ -152,7 +148,10 @@ mod tests {
         map.insert(String::from("baz"), String::from("Tutu"));
 
         let mut alias_map: HashMap<String, Vec<String>> = HashMap::new();
-        alias_map.insert(String::from("foo"), vec![String::from("toto"), String::from("TOto")]);
+        alias_map.insert(
+            String::from("foo"),
+            vec![String::from("toto"), String::from("TOto")],
+        );
         alias_map.insert(String::from("bar"), vec![String::from("tata")]);
         alias_map.insert(String::from("baz"), vec![String::from("tutu")]);
 
