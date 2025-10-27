@@ -49,5 +49,5 @@ special = [
 ]
 leader = [
     "L",
-    " ",
+    "",
 ] # blank rarity is used for ST13-001 Sabo leader card on the french site
