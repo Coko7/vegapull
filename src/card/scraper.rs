@@ -176,6 +176,7 @@ impl CardScraper {
         let raw_cost = Self::strip_html_tags(&raw_cost)?;
         let raw_cost = normalize_ascii(&raw_cost)
             .replace(',', "")
+            .replace(' ', "")
             .trim()
             .to_string();
         trace!("fetched card.cost: {}", raw_cost);
@@ -185,7 +186,14 @@ impl CardScraper {
             return Ok(None);
         }
 
-        match raw_cost.parse::<i32>() {
+        // Sanity check
+        let digits: String = raw_cost.chars().filter(|c| c.is_ascii_digit()).collect();
+        if digits.is_empty() {
+            trace!("card.cost has no digits");
+            return Ok(None);
+        }
+
+        match digits.parse::<i32>() {
             Ok(val) => {
                 trace!("processed card.cost");
                 Ok(Some(val))
@@ -244,16 +252,24 @@ impl CardScraper {
         let raw_power = Self::strip_html_tags(&raw_power)?;
         let raw_power = normalize_ascii(&raw_power)
             .replace(',', "")
+            .replace(' ', "")
             .trim()
             .to_string();
         trace!("fetched card.power: {}", raw_power);
 
-        if raw_power == "-" {
+        if raw_power == "-" || raw_power.is_empty() {
             trace!("card.power unset");
             return Ok(None);
         }
 
-        match raw_power.parse::<i32>() {
+        // Sanity check
+        let digits: String = raw_power.chars().filter(|c| c.is_ascii_digit()).collect();
+        if digits.is_empty() {
+            trace!("card.power has no digits");
+            return Ok(None);
+        }
+
+        match digits.parse::<i32>() {
             Ok(val) => {
                 trace!("processed card.power");
                 Ok(Some(val))
@@ -270,16 +286,24 @@ impl CardScraper {
         let raw_counter = Self::strip_html_tags(&raw_counter)?;
         let raw_counter = normalize_ascii(&raw_counter)
             .replace(',', "")
+            .replace(' ', "")
             .trim()
             .to_string();
         trace!("fetched card.counter: {}", raw_counter);
 
-        if raw_counter == "-" {
+        if raw_counter == "-" || raw_counter.is_empty() {
             trace!("card.counter unset");
             return Ok(None);
         }
 
-        match raw_counter.parse::<i32>() {
+        // Extract only digits from the string (some french cards have extra text, e.g., カウンター1000 in EB01-018_p1)
+        let digits: String = raw_counter.chars().filter(|c| c.is_ascii_digit()).collect();
+        if digits.is_empty() {
+            trace!("card.counter has no digits");
+            return Ok(None);
+        }
+
+        match digits.parse::<i32>() {
             Ok(val) => {
                 trace!("processed card.counter");
                 Ok(Some(val))

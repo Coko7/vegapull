@@ -37,4 +37,17 @@ promo = "P"
 [aliases]
 
 [aliases.rarities]
-special = ["SP", "SP CARD", "SR SP", "SEC SP", "SP SEC", "SP SR", ""]
+special = [
+    "SP",
+    "SP CARD",
+    "SEC SP",
+    "SP SEC",
+    "SR SP",
+    "SP SR",
+    "SP R",
+    "R SP",
+]
+leader = [
+    "L",
+    " ",
+] # blank rarity is used for ST13-001 Sabo leader card on the french site
