@@ -33,3 +33,12 @@ leader = "L"
 special = "SP卡"
 treasure_rare = "TR"
 promo = "P"
+
+[aliases]
+
+[aliases.colors]
+red = ["紅", "赤"]
+green = ["綠", "緑"]
+blue = ["藍", "青"]
+yellow = ["黃", "黄"]
+black = ["黑", "黒"]

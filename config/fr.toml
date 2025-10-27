@@ -33,3 +33,8 @@ leader = "L"
 special = "SP CARD"
 treasure_rare = "TR"
 promo = "P"
+
+[aliases]
+
+[aliases.rarities]
+special = ["SP", "SP CARD", "SR SP", "SEC SP", "SP SEC", "SP SR", ""]

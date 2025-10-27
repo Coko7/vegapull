@@ -6,11 +6,24 @@ use std::{collections::HashMap, fs};
 use crate::{cli::LanguageCode, config};
 
 pub const EN_LOCALE_RAW: &str = include_str!("../config/en.toml");
+pub const EN_ASIA_LOCALE_RAW: &str = include_str!("../config/en_asia.toml");
 pub const JP_LOCALE_RAW: &str = include_str!("../config/jp.toml");
 pub const ZH_HK_LOCALE_RAW: &str = include_str!("../config/zh_hk.toml");
 pub const ZH_TW_LOCALE_RAW: &str = include_str!("../config/zh_tw.toml");
 pub const TH_LOCALE_RAW: &str = include_str!("../config/th.toml");
 pub const FR_LOCALE_RAW: &str = include_str!("../config/fr.toml");
+
+#[derive(Debug, Deserialize, Serialize, Default)]
+pub struct Aliases {
+    #[serde(default)]
+    pub colors: HashMap<String, Vec<String>>,
+    #[serde(default)]
+    pub attributes: HashMap<String, Vec<String>>,
+    #[serde(default)]
+    pub categories: HashMap<String, Vec<String>>,
+    #[serde(default)]
+    pub rarities: HashMap<String, Vec<String>>,
+}
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Localizer {
@@ -20,33 +33,55 @@ pub struct Localizer {
     pub attributes: HashMap<String, String>,
     pub categories: HashMap<String, String>,
     pub rarities: HashMap<String, String>,
+
+    // Optional alias lists to accept multiple labels per canonical key
+    #[serde(default)]
+    pub aliases: Aliases,
 }
 
 impl Localizer {
-    fn reverse_search(hash_map: &HashMap<String, String>, value: &str) -> Option<String> {
-        hash_map.iter().find_map(|(key, val)| {
-            if val == value {
-                Some(key.to_string())
-            } else {
-                None
+    fn match_with_alias(
+        primary: &HashMap<String, String>,
+        aliases: &HashMap<String, Vec<String>>,
+        value: &str,
+    ) -> Option<String> {
+        let v = value.trim();
+        // Print Aliases for Debugging
+        info!("Matching value: `{}`", v);
+        info!("Primary map: {:?}", primary);
+        info!("Alias map: {:?}", aliases);
+        // Exact match against primary map values
+        if let Some((k, _)) = primary.iter().find(|(_, val)| val.as_str() == v) {
+            return Some(k.clone());
+        }
+
+        // Case-insensitive match for Latin; exact match for others
+        let v_lower = v.to_ascii_lowercase();
+        for (k, list) in aliases {
+            for a in list {
+                if a == v || a.to_ascii_lowercase() == v_lower {
+                    return Some(k.clone());
+                }
             }
-        })
+        }
+
+        None
     }
 
     pub fn match_color(&self, value: &str) -> Option<String> {
-        Self::reverse_search(&self.colors, value)
+        Self::match_with_alias(&self.colors, &self.aliases.colors, value)
     }
 
     pub fn match_attribute(&self, value: &str) -> Option<String> {
-        Self::reverse_search(&self.attributes, value)
+        Self::match_with_alias(&self.attributes, &self.aliases.attributes, value)
     }
 
     pub fn match_category(&self, value: &str) -> Option<String> {
-        Self::reverse_search(&self.categories, value)
+        Self::match_with_alias(&self.categories, &self.aliases.categories, value)
     }
 
     pub fn match_rarity(&self, value: &str) -> Option<String> {
-        Self::reverse_search(&self.rarities, value)
+        Self::match_with_alias(&self.rarities, &self.aliases.rarities, value)
     }
 
     pub fn find_locales() -> Result<()> {
@@ -110,20 +145,25 @@ impl Localizer {
 mod tests {
     use super::*;
 
-    fn get_test_map() -> HashMap<String, String> {
+    fn get_test_maps() -> (HashMap<String, String>, HashMap<String, Vec<String>>) {
         let mut map = HashMap::new();
         map.insert(String::from("foo"), String::from("Toto"));
         map.insert(String::from("bar"), String::from("Tata"));
         map.insert(String::from("baz"), String::from("Tutu"));
 
-        map
+        let mut alias_map: HashMap<String, Vec<String>> = HashMap::new();
+        alias_map.insert(String::from("foo"), vec![String::from("toto"), String::from("TOto")]);
+        alias_map.insert(String::from("bar"), vec![String::from("tata")]);
+        alias_map.insert(String::from("baz"), vec![String::from("tutu")]);
+
+        (map, alias_map)
     }
 
     #[test]
     fn reverse_search_returns_some() {
-        let map = get_test_map();
+        let (map, alias_map) = get_test_maps();
 
-        let actual = Localizer::reverse_search(&map, "Toto");
+        let actual = Localizer::match_with_alias(&map, &alias_map, "Toto");
         let expected = Some(String::from("foo"));
 
         assert_eq!(actual, expected);
@@ -131,9 +171,9 @@ mod tests {
 
     #[test]
     fn reverse_search_returns_none() {
-        let map = get_test_map();
+        let (map, alias_map) = get_test_maps();
 
-        let actual = Localizer::reverse_search(&map, "Titi");
+        let actual = Localizer::match_with_alias(&map, &alias_map, "Titi");
         let expected = None;
 
         assert_eq!(actual, expected);
