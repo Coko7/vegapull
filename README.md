@@ -60,6 +60,7 @@ Options:
 ```
 
 ## Helper Scripts
+
 You can use the example scripts that directly use the `vegapull` CLI to download data for all existing packs:
 
 ### Bash
@@ -77,6 +78,10 @@ coko7@example:~$ bash scripts/pull-all-gum.sh
 ```console
 ➜ go run scripts/pull.go
 ```
+
+### Python
+
+You can find a Python helper script on this repository: https://github.com/buhbbl/punk-records
 
 ## 🃏 Supported card fields
 

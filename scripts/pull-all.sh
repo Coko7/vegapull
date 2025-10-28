@@ -2,6 +2,7 @@
 
 LANGUAGE="japanese"
 VEGA_DATA=data/$LANGUAGE
+VEGA_BIN=vegapull
 
 if [ -d "$VEGA_DATA" ]; then
     read -rp "The $VEGA_DATA is about to be wiped to hold the new data, do you want to proceed? (y/N) " confirm
@@ -18,7 +19,7 @@ echo -e "Created dir: $VEGA_DATA\n"
 
 echo "VegaPulling the list of packs ($LANGUAGE)..."
 
-if ! ./target/release/vegapull --language $LANGUAGE packs > $VEGA_DATA/packs.json; then
+if ! "$VEGA_BIN" --language $LANGUAGE packs > $VEGA_DATA/packs.json; then
     echo "Failed to pull list of packs using vegapull. Aborted" >&2
     exit 1
 fi
@@ -34,7 +35,7 @@ function pull_cards() {
 
     while read -r id; do
         echo -n "[$index/$count] VegaPulling cards for pack '$id'..."
-        if ! ./target/release/vegapull --language $LANGUAGE cards "$id" > "$VEGA_DATA/cards_$id.json"; then
+        if ! "$VEGA_BIN" --language $LANGUAGE cards "$id" > "$VEGA_DATA/cards_$id.json"; then
             echo "Failure"
             echo "Failed to pull cards using vegapull. Aborted" >&2
             return 1

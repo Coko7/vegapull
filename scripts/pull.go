@@ -25,7 +25,7 @@ type Pack struct {
 const (
 	language  = "english"
 	vegaData  = "data/english"
-	vegaBin   = "target/release/vegapull"
+	vegaBin   = "vegapull"
 	packsFile = "packs.json"
 )
 
