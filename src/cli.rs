@@ -30,12 +30,18 @@ pub struct Cli {
 pub enum Commands {
     /// Get the list of all existing packs
     #[command(alias = "pack", alias = "pak")]
-    Packs,
+    Packs {
+        #[arg(short, long = "out")]
+        output_file: Option<PathBuf>,
+    },
     /// Get all cards within the given pack
     #[command(alias = "card", alias = "car")]
     Cards {
         /// ID of the pack
         pack_id: OsString,
+
+        #[arg(short, long = "out")]
+        output_file: Option<PathBuf>,
     },
     /// Download all card images for a given pack
     #[command(alias = "image", alias = "img")]
@@ -70,6 +76,8 @@ pub enum LanguageCode {
     Japanese,
     #[value(name = "thai", alias = "th")]
     Thai,
+    #[value(name = "french", alias = "fr")]
+    French,
 }
 
 impl LanguageCode {
@@ -82,6 +90,7 @@ impl LanguageCode {
             LanguageCode::EnglishAsia => "english-asia",
             LanguageCode::Japanese => "japanese",
             LanguageCode::Thai => "thai",
+            LanguageCode::French => "french",
         };
 
         PathBuf::from(path)
@@ -100,6 +109,7 @@ impl FromStr for LanguageCode {
             "english-asia" => Ok(LanguageCode::EnglishAsia),
             "japanese" => Ok(LanguageCode::Japanese),
             "thai" => Ok(LanguageCode::Thai),
+            "french" => Ok(LanguageCode::French),
             _ => Err(()),
         }
     }

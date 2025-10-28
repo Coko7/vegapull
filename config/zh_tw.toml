@@ -1,12 +1,12 @@
-hostname = "https://www.onepiece-cardgame.com"
+hostname = "https://asia-tw.onepiece-cardgame.com"
 
 [colors]
-red = "赤"
-green = "緑"
-blue = "青"
+red = "紅"
+green = "綠"
+blue = "藍"
 purple = "紫"
-black = "黒"
-yellow = "黄"
+black = "黑"
+yellow = "黃"
 
 [attributes]
 slash = "斬"
@@ -30,6 +30,15 @@ rare = "R"
 super_rare = "SR"
 secret_rare = "SEC"
 leader = "L"
-special = "SPカード"
+special = "SP卡"
 treasure_rare = "TR"
 promo = "P"
+
+[aliases]
+
+[aliases.colors]
+red = ["紅", "赤"]
+green = ["綠", "緑"]
+blue = ["藍", "青"]
+yellow = ["黃", "黄"]
+black = ["黑", "黒"]

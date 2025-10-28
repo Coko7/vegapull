@@ -8,9 +8,11 @@ The CLI directly goes against the [onepiece-cardgame.com](https://onepiece-cardg
 
 ![demo](https://github.com/user-attachments/assets/6ac89611-08b5-4caa-ba83-a696929a2e37)
 
-## Where is the data?
+## Where can I find prefetched datasets?
 
-For practical reasons, data is kept in a separate repository: https://github.com/Coko7/vegapull-records
+There are currently two Git repositories with JSON data:
+- [buhbbl/punk-records](https://github.com/buhbbl/punk-records) (all languages)
+- [Coko7/vegapull-records](https://github.com/Coko7/vegapull-records) (english/japanese only)
 
 ## Installation
 

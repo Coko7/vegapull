@@ -2,11 +2,17 @@ use anyhow::{bail, Context, Result};
 use log::{debug, trace};
 use regex::Regex;
 use scraper::{ElementRef, Html};
+use unicode_normalization::UnicodeNormalization;
 
 use crate::{
     card::{Card, CardAttribute, CardCategory, CardColor, CardRarity},
     localizer::Localizer,
 };
+
+fn normalize_ascii(s: &str) -> String {
+    // NFKC converts full-width digits/letters to ASCII equivalents
+    s.nfkc().collect::<String>()
+}
 
 pub struct CardScraper {}
 
@@ -132,13 +138,33 @@ impl CardScraper {
         let raw_colors: Vec<&str> = raw_colors.split('/').collect();
 
         let mut colors = Vec::new();
+
+        if raw_colors.len() == 1 && localizer.match_color(raw_colors[0]).is_none() {
+            trace!("raw color is unseparatble, trying to parse character by character");
+            let mut any = false;
+            for ch in raw_colors[0].chars() {
+                let char_color = ch.to_string();
+                if let Some(raw_color) = localizer.match_color(&char_color) {
+                    trace!("found color char: {} -> {}", char_color, raw_color);
+                    let color = CardColor::from_str(&raw_color)?;
+                    colors.push(color);
+                    any = true;
+                }
+            }
+            if any {
+                colors.dedup();
+                trace!("processed card.colors by character");
+                return Ok(colors);
+            }
+        }
+
         for (index, raw_color) in raw_colors.iter().enumerate() {
             trace!("processing card.colors[{}]: {}", index, raw_color);
             let color = CardColor::parse(localizer, raw_color)?;
             colors.push(color);
         }
 
-        trace!("prcessed card.colors");
+        trace!("processed card.colors");
         Ok(colors)
     }
 
@@ -148,6 +174,11 @@ impl CardScraper {
 
         let raw_cost = Self::get_child_node(element, sel.to_string())?.inner_html();
         let raw_cost = Self::strip_html_tags(&raw_cost)?;
+        let raw_cost = normalize_ascii(&raw_cost)
+            .replace(',', "")
+            .replace(' ', "")
+            .trim()
+            .to_string();
         trace!("fetched card.cost: {}", raw_cost);
 
         if raw_cost == "-" {
@@ -155,7 +186,14 @@ impl CardScraper {
             return Ok(None);
         }
 
-        match raw_cost.parse::<i32>() {
+        // Sanity check
+        let digits: String = raw_cost.chars().filter(|c| c.is_ascii_digit()).collect();
+        if digits.is_empty() {
+            trace!("card.cost has no digits");
+            return Ok(None);
+        }
+
+        match digits.parse::<i32>() {
             Ok(val) => {
                 trace!("processed card.cost");
                 Ok(Some(val))
@@ -172,6 +210,15 @@ impl CardScraper {
         trace!("fetching card.attributes ({})...", sel);
 
         if let Ok(attr_img) = Self::get_child_node(element, sel.to_string()) {
+            if let Some(url) = attr_img.attr("src") {
+                if let Ok(attributes) = CardAttribute::from_icon_url(url) {
+                    trace!("processed card.attributes");
+                    return Ok(attributes);
+                }
+                trace!("failed to parse card.attributes from icon url {}", url);
+            }
+            trace!("Falling back to processing alt attribute");
+
             let raw_attributes = attr_img.attr("alt").context("no alt attr")?.to_string();
             trace!("fetched card.attributes: {}", raw_attributes);
 
@@ -203,14 +250,26 @@ impl CardScraper {
 
         let raw_power = Self::get_child_node(element, sel.to_string())?.inner_html();
         let raw_power = Self::strip_html_tags(&raw_power)?;
+        let raw_power = normalize_ascii(&raw_power)
+            .replace(',', "")
+            .replace(' ', "")
+            .trim()
+            .to_string();
         trace!("fetched card.power: {}", raw_power);
 
-        if raw_power == "-" {
+        if raw_power == "-" || raw_power.is_empty() {
             trace!("card.power unset");
             return Ok(None);
         }
 
-        match raw_power.parse::<i32>() {
+        // Sanity check
+        let digits: String = raw_power.chars().filter(|c| c.is_ascii_digit()).collect();
+        if digits.is_empty() {
+            trace!("card.power has no digits");
+            return Ok(None);
+        }
+
+        match digits.parse::<i32>() {
             Ok(val) => {
                 trace!("processed card.power");
                 Ok(Some(val))
@@ -225,14 +284,26 @@ impl CardScraper {
 
         let raw_counter = Self::get_child_node(element, sel.to_string())?.inner_html();
         let raw_counter = Self::strip_html_tags(&raw_counter)?;
+        let raw_counter = normalize_ascii(&raw_counter)
+            .replace(',', "")
+            .replace(' ', "")
+            .trim()
+            .to_string();
         trace!("fetched card.counter: {}", raw_counter);
 
-        if raw_counter == "-" {
+        if raw_counter == "-" || raw_counter.is_empty() {
             trace!("card.counter unset");
             return Ok(None);
         }
 
-        match raw_counter.parse::<i32>() {
+        // Extract only digits from the string (some french cards have extra text, e.g., カウンター1000 in EB01-018_p1)
+        let digits: String = raw_counter.chars().filter(|c| c.is_ascii_digit()).collect();
+        if digits.is_empty() {
+            trace!("card.counter has no digits");
+            return Ok(None);
+        }
+
+        match digits.parse::<i32>() {
             Ok(val) => {
                 trace!("processed card.counter");
                 Ok(Some(val))
