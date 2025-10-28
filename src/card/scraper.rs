@@ -175,8 +175,7 @@ impl CardScraper {
         let raw_cost = Self::get_child_node(element, sel.to_string())?.inner_html();
         let raw_cost = Self::strip_html_tags(&raw_cost)?;
         let raw_cost = normalize_ascii(&raw_cost)
-            .replace(',', "")
-            .replace(' ', "")
+            .replace([',', ' '], "")
             .trim()
             .to_string();
         trace!("fetched card.cost: {}", raw_cost);
@@ -251,8 +250,7 @@ impl CardScraper {
         let raw_power = Self::get_child_node(element, sel.to_string())?.inner_html();
         let raw_power = Self::strip_html_tags(&raw_power)?;
         let raw_power = normalize_ascii(&raw_power)
-            .replace(',', "")
-            .replace(' ', "")
+            .replace([',', ' '], "")
             .trim()
             .to_string();
         trace!("fetched card.power: {}", raw_power);
@@ -285,8 +283,7 @@ impl CardScraper {
         let raw_counter = Self::get_child_node(element, sel.to_string())?.inner_html();
         let raw_counter = Self::strip_html_tags(&raw_counter)?;
         let raw_counter = normalize_ascii(&raw_counter)
-            .replace(',', "")
-            .replace(' ', "")
+            .replace([',', ' '], "")
             .trim()
             .to_string();
         trace!("fetched card.counter: {}", raw_counter);

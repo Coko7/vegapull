@@ -39,7 +39,14 @@ fn process_args(args: Cli) -> Result<()> {
 
     match args.command {
         cli::Commands::Packs { output_file } => list_packs(args.language, output_file.as_deref()),
-        cli::Commands::Cards { pack_id, output_file } => list_cards(args.language, &pack_id.to_string_lossy(), output_file.as_deref()),
+        cli::Commands::Cards {
+            pack_id,
+            output_file,
+        } => list_cards(
+            args.language,
+            &pack_id.to_string_lossy(),
+            output_file.as_deref(),
+        ),
         cli::Commands::Interactive => interactive::show_interactive(),
         cli::Commands::Images {
             pack_id,

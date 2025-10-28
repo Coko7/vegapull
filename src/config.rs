@@ -3,7 +3,10 @@ use directories::ProjectDirs;
 use log::info;
 use std::{env, fs, path::PathBuf};
 
-use crate::localizer::{EN_LOCALE_RAW, EN_ASIA_LOCALE_RAW, JP_LOCALE_RAW, FR_LOCALE_RAW, TH_LOCALE_RAW, ZH_HK_LOCALE_RAW, ZH_TW_LOCALE_RAW};
+use crate::localizer::{
+    EN_ASIA_LOCALE_RAW, EN_LOCALE_RAW, FR_LOCALE_RAW, JP_LOCALE_RAW, TH_LOCALE_RAW,
+    ZH_HK_LOCALE_RAW, ZH_TW_LOCALE_RAW,
+};
 
 pub const APP_NAME: &str = "vegapull";
 pub const CONFIG_VAR: &str = "VEGAPULL_CONFIG";

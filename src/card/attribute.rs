@@ -1,4 +1,4 @@
-use anyhow::{bail, anyhow, Result};
+use anyhow::{anyhow, bail, Result};
 use serde::{Deserialize, Serialize};
 
 use crate::localizer::Localizer;
@@ -38,7 +38,7 @@ impl CardAttribute {
             .rsplit('/')
             .next()
             .ok_or_else(|| anyhow!("Invalid URL: {}", url))?;
-        
+
         let stem = file
             .strip_prefix("ico_type")
             .ok_or_else(|| anyhow!("attribute icon: missing ico_type prefix in: {}", file))?;
