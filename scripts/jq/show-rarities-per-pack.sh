@@ -24,8 +24,11 @@ bash scripts/jq/jq-rarities-per-pack.sh \
     uncommon=$(echo "$pack" | jq '.rarity_counts[] | select(.rarity == "Uncommon") | .count' || echo 0)
     common=$(echo "$pack" | jq '.rarity_counts[] | select(.rarity == "Common") | .count' || echo 0)
 
+    all_count=$(echo "$pack" | jq '[.rarity_counts[].count] | add')
+
     gold_sum="${FG_YELLOW}${secret_rare:-0} 🌟 ${treasure_rare:-0}${COL_RESET}"
     purple_sum="${FG_PURPLE}${super_rare:-0} ⭐ ${special:-0}${COL_RESET}"
+    pack_name="${FG_BLUE}$pack_name${COL_RESET}"
 
-    echo -e "(${FG_RED}$pack_id${COL_RESET}) $gold_sum / $purple_sum ${COL_RESET}${FG_BLUE}$pack_name${COL_RESET}"
+    echo -e "(${FG_RED}$pack_id${COL_RESET}) $gold_sum / $purple_sum $pack_name => $all_count"
 done;
